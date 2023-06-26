@@ -71,22 +71,42 @@ router.post("/reset-password",async(req,res)=>{
     service:"gmail",
     auth:{
       user:"loguskillhub@gmail.com",
-      pass:"xfhuoawggqafcawb"
+      pass:"xfhuoawggqafcawb",
     },
   })
-  const message = {
-    from:"loguskillhub@gmail.com",
-    to:user.email,
-    subject:"Password reset request",
-    text:`you are receiving this email because you(or someone else) has requested a password reset for your account.\n\n please use the following token to reset your password: ${token}\n\n If you did not request your password  reset, please ignore this email.`
-  }
+
+
+// Send the verification link to the user's email address
+// function sendVerificationLink(email, token) {
+//   const verificationLink = `https://www.google.com`; // Replace with your verification URL
+//   const mailOptions = {
+//     from: 'loguskillhub@gmail.com',
+//     to: email,
+//     subject: 'Email Verification',
+//     text: `Please click on the following link to verify your email: ${verificationLink}`,
+//     html: `Please click <a href="${verificationLink}">here</a> to verify your email.`
+//   }
+
+  // const message = {
+  //   from:"loguskillhub@gmail.com",
+  //   to:user.email,
+  //   subject:"Password reset request",
+  //   text:`you are receiving this email because you(or someone else) has requested a password reset for your account.\n\n please use the following token to reset your password: ${token}\n\n If you did not request your password  reset, please ignore this email.`
+  // }
+
   transporter.sendMail(message,(err,info) => {
     if (err) {
       res.status(404).json({message:"Something went wrong, try again"})
     }
     res.status(200).json({message:"Password reset email sent" + info.response});
   });
+// }
+// const userEmail = 'loguskillhub@gmail.com';
+// const verificationToken = token;
+// sendVerificationLink(userEmail, verificationToken);
 })
+
+
 
 // reset-password send post api 
 router.post('/reset-password/:token',async(req,res)=> {
