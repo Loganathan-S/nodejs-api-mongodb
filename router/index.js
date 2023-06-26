@@ -54,7 +54,7 @@ router.get("/data",verifyToken,(req,res)=>{
 })
 
 
-// reset-password api
+// reset-password request post api
 router.post("/reset-password",async(req,res)=>{
   const {email} = req.body;
   const user = await User.findOne({email});
@@ -70,12 +70,12 @@ router.post("/reset-password",async(req,res)=>{
   const transporter = nodemalier.createTransport({
     service:"gmail",
     auth:{
-      user:"rajarajan2k1@gmail.com",
-      pass:"lxtbifszbjrvxsir"
+      user:"loguskillhub@gmail.com",
+      pass:"xfhuoawggqafcawb"
     },
   })
   const message = {
-    from:"rajarajan2k1@gmail.com",
+    from:"loguskillhub@gmail.com",
     to:user.email,
     subject:"Password reset request",
     text:`you are receiving this email because you(or someone else) has requested a password reset for your account.\n\n please use the following token to reset your password: ${token}\n\n If you did not request your password  reset, please ignore this email.`
@@ -86,6 +86,29 @@ router.post("/reset-password",async(req,res)=>{
     }
     res.status(200).json({message:"Password reset email sent" + info.response});
   });
+})
+
+// reset-password send post api 
+router.post('/reset-password/:token',async(req,res)=> {
+  const {token} = req.params;
+  const {password} = req.body;
+
+  const user = await User.findOne({
+    resetPasswordToken:token,
+    resetPasswordExpires:{$gt:Date.now()}
+  })
+
+  if(!user){
+    res.status(404).json({message:"Invalid Token"});
+  }
+
+  const hashPassword = await bcrypt.hash(password,10)
+  user.password = hashPassword;
+  user.resetPasswordToken = null;
+  user.resetPasswordExpires = null;
+  await user.save();
+  res.json({message:"Password reset successfully"});
+
 })
 
 
